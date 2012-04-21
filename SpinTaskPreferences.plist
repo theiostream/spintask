@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+
+<plist version="1.0">
+
+<dict>
+   <key>entry</key>
+   	 <dict>
+   		 <key>cell</key>
+         <string>PSLinkCell</string>
+         <key>icon</key>
+         <string>SpinTaskPreferences.png</string>
+         <key>label</key>
+         <string>SpinTask</string>
+      </dict>
+      
+      <key>items</key>
+      <array>
+        <dict>
+            <key>cell</key>
+        	<string>PSGroupCell</string>
+        </dict>
+         
+         <dict>
+      		<key>cell</key>
+      		<string>PSLinkCell</string>
+      		<key>label</key>
+      		<string>Activation</string>
+      		<key>isController</key>
+      		<true/>
+      		<key>bundle</key>
+      		<string>LibActivator</string>
+      		<key>activatorListener</key>
+      		<string>am.theiostre.spintask</string>
+    	</dict>
+        
+        <dict>
+        	<key>cell</key>
+        	<string>PSGroupCell</string>
+        	<key>label</key>
+        	<string>Swipe Gestures</string>
+        </dict>
+        
+        <dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>am.theiostre.spintask</string>
+			<key>key</key>
+			<string>STInverse</string>
+			<key>label</key>
+			<string>Inverse</string>
+			<key>PostNotification</key>
+			<string>am.theiostre.spintask.reload</string>
+		</dict>
+        
+        <dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>am.theiostre.spintask</string>
+			<key>key</key>
+			<string>STPan</string>
+			<key>label</key>
+			<string>Pan</string>
+			<key>PostNotification</key>
+			<string>am.theiostre.spintask.reload</string>
+		</dict>
+		
+		<dict>
+			<key>cell</key>
+			<string>PSLinkListCell</string>
+			<key>default</key>
+			<integer>1</integer>
+			<key>defaults</key>
+			<string>am.theiostre.spintask</string>
+			<key>detail</key>
+			<string>PSListItemsController</string>
+			<key>key</key>
+			<string>STSwipeFingers</string>
+			<key>label</key>
+			<string>Fingers for swipe/pan</string>
+			<key>validTitles</key>
+			<array>
+				<string>One</string>
+				<string>Two</string>
+				<string>Three</string>
+				<string>Four</string>
+			</array>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>4</integer>
+			</array>
+			<key>PostNotification</key>
+			<string>am.theiostre.spintask.reload</string>
+		</dict>
+		
+		<dict>
+        	<key>cell</key>
+        	<string>PSGroupCell</string>
+        	<key>label</key>
+        	<string>Tapping gestures</string>
+        </dict>
+		
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>am.theiostre.spintask</string>
+			<key>key</key>
+			<string>STTap</string>
+			<key>label</key>
+			<string>Tap for launch</string>
+			<key>PostNotification</key>
+			<string>am.theiostre.spintask.reload</string>
+		</dict>
+		
+		<dict>
+			<key>cell</key>
+			<string>PSLinkListCell</string>
+			<key>default</key>
+			<integer>1</integer>
+			<key>defaults</key>
+			<string>am.theiostre.spintask</string>
+			<key>detail</key>
+			<string>PSListItemsController</string>
+			<key>key</key>
+			<string>STTapTaps</string>
+			<key>label</key>
+			<string>Number of taps</string>
+			<key>validTitles</key>
+			<array>
+				<string>One</string>
+				<string>Two</string>
+				<string>Three</string>
+			</array>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+			</array>
+			<key>PostNotification</key>
+			<string>am.theiostre.spintask.reload</string>
+		</dict>
+		
+		<dict>
+			<key>cell</key>
+			<string>PSLinkListCell</string>
+			<key>default</key>
+			<integer>1</integer>
+			<key>defaults</key>
+			<string>am.theiostre.spintask</string>
+			<key>detail</key>
+			<string>PSListItemsController</string>
+			<key>key</key>
+			<string>STTapFingers</string>
+			<key>label</key>
+			<string>Number of touches</string>
+			<key>validTitles</key>
+			<array>
+				<string>One</string>
+				<string>Two</string>
+				<string>Three</string>
+			</array>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+			</array>
+			<key>PostNotification</key>
+			<string>am.theiostre.spintask.reload</string>
+		</dict>
+        
+        <dict>
+        	<key>cell</key>
+        	<string>PSGroupCell</string>
+        	<key>label</key>
+        	<string>App selection</string>
+        	<key>footerText</key>
+        	<string>In case this option is disabled, the view will be populated with the recently launched apps.</string>
+        </dict>
+        
+        <dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>am.theiostre.spintask</string>
+			<key>key</key>
+			<string>STSelectApps</string>
+			<key>label</key>
+			<string>Select apps</string>
+			<key>PostNotification</key>
+			<string>am.theiostre.spintask.reload</string>
+		</dict>
+		
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>bundle</key>
+			<string>AppList</string>
+			<key>isController</key>
+			<true/>
+			<key>label</key>
+			<string>First app</string>
+			<key>ALSettingsPath</key>
+			<string>/var/mobile/Library/Preferences/am.theiostre.spintask.plist</string>
+			<key>ALSettingsKey</key>
+			<string>App1</string>
+			<key>ALSingleEnabledMode</key>
+			<true/>
+		</dict>
+		
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>bundle</key>
+			<string>AppList</string>
+			<key>isController</key>
+			<true/>
+			<key>label</key>
+			<string>Second app</string>
+			<key>ALSettingsPath</key>
+			<string>/var/mobile/Library/Preferences/am.theiostre.spintask.plist</string>
+			<key>ALSettingsKey</key>
+			<string>App2</string>
+			<key>ALSingleEnabledMode</key>
+			<true/>
+		</dict>
+		
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>bundle</key>
+			<string>AppList</string>
+			<key>isController</key>
+			<true/>
+			<key>label</key>
+			<string>Third app</string>
+			<key>ALSettingsPath</key>
+			<string>/var/mobile/Library/Preferences/am.theiostre.spintask.plist</string>
+			<key>ALSettingsKey</key>
+			<string>App3</string>
+			<key>ALSingleEnabledMode</key>
+			<true/>
+		</dict>
+		
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>bundle</key>
+			<string>AppList</string>
+			<key>isController</key>
+			<true/>
+			<key>label</key>
+			<string>Fourth app</string>
+			<key>ALSettingsPath</key>
+			<string>/var/mobile/Library/Preferences/am.theiostre.spintask.plist</string>
+			<key>ALSettingsKey</key>
+			<string>App4</string>
+			<key>ALSingleEnabledMode</key>
+			<true/>
+		</dict>
+		
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>Idea by Ariel Wizx, coded by theiostream.</string>
+		</dict>
+	</array>
+      
+      <key>title</key>
+      <string>SpinTask</string>
+   </dict>
+
+</plist>
