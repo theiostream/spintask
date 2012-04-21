@@ -11,17 +11,7 @@
 #import <libdisplaystack/DSDisplayController.h>
 #import <QuartzCore/QuartzCore.h>
 
-#define STPreferences "/var/mobile/Library/Preferences/am.theiostre.spintask.plist"
-
 static int l = 4;
-
-static NSDictionary *spinTaskPrefs;
-static void STUpdatePrefs() {
-	NSDictionary *plist = [NSDictionary dictionaryWithContentsOfFile:@STPreferences];
-	if (!plist) return;
-	
-	spinTaskPrefs = [plist retain];
-}
 
 static id inst = nil;
 @interface STActivator : NSObject <LAListener> {
@@ -37,18 +27,46 @@ static id inst = nil;
 	dispatch_source_t tmr;
 }
 
++ (STActivator *)sharedInstance;
 - (void)startTimer;
 - (void)stopTimer;
 - (void)swipe:(UISwipeGestureRecognizer *)rec;
+- (void)pan:(UIPanGestureRecognizer *)rec;
+- (void)tap:(UITapGestureRecognizer *)tap;
 - (void)launch;
 - (void)cleanUp;
 - (BOOL)showing;
 @end
 
-static id STAK(NSDictionary *dict, int c) {
-	id k = [dict objectForKey:[NSString stringWithFormat:@"App%i", c]];
-	return k ? k : nil;
+// ======================================
+
+static NSDictionary *spinTaskPrefs;
+static void STUpdatePrefs() {
+	NSDictionary *plist = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/am.theiostre.spintask.plist"];
+	if (!plist) return;
+	
+	spinTaskPrefs = [plist retain];
 }
+
+static void STReloadPrefs(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	STUpdatePrefs();
+}
+
+static NSUInteger STGetUnsignedIntegerPref(NSString *key, NSUInteger def) {
+	if (!spinTaskPrefs) return def;
+	
+	NSNumber *v = [spinTaskPrefs objectForKey:key];
+	return v ? [v unsignedIntegerValue] : def;
+}
+
+static BOOL STGetBoolPref(NSString *key, BOOL def) {
+	if (!spinTaskPrefs) return def;
+	
+	NSNumber *v = [spinTaskPrefs objectForKey:key];
+	return v ? [v boolValue] : def;
+}
+
+// ======================================
 
 static void STReverse(int *di) {
 	NSNumber *re = [spinTaskPrefs objectForKey:@"STInverse"];
@@ -68,15 +86,11 @@ static UIImageView *STImageViewForIdentifier(NSString *ide, int i) {
 	return iconImageView;
 }
 
-static NSArray *STRecentAppsIdentifiers() {
-	return [[objc_getClass("SBAppSwitcherModel") sharedInstance] identifiers];
-}
-
 static NSDictionary* STRecentAppViews() {
 	NSArray *ids;
 	NSMutableArray *ret = [NSMutableArray array];
 	
-	ids = STRecentAppsIdentifiers();
+	ids = [[objc_getClass("SBAppSwitcherModel") sharedInstance] identifiers];
 	for (int i=0; i<l; i++) {
 		NSString *identifier = [ids objectAtIndex:i];
 		
@@ -98,10 +112,10 @@ static NSDictionary* STChosenAppViews() {
 	NSArray *ids;
 	NSMutableArray *ret = [NSMutableArray arrayWithCapacity:4];
 	
-	NSString *app1 = STAK(spinTaskPrefs, 1);
-	NSString *app2 = STAK(spinTaskPrefs, 2);
-	NSString *app3 = STAK(spinTaskPrefs, 3);
-	NSString *app4 = STAK(spinTaskPrefs, 4);
+	NSString *app1 = [spinTaskPrefs objectForKey:@"App1"];
+	NSString *app2 = [spinTaskPrefs objectForKey:@"App2"];
+	NSString *app3 = [spinTaskPrefs objectForKey:@"App3"];
+	NSString *app4 = [spinTaskPrefs objectForKey:@"App4"];
 	
 	if ((app1 && app2 && app3 && app4)) {
 		ids = [NSArray arrayWithObjects:app1, app2, app3, app4, nil];
@@ -117,6 +131,8 @@ static NSDictionary* STChosenAppViews() {
 	return STRecentAppViews();
 }
 
+// ======================================
+
 @implementation STActivator
 + (STActivator *)sharedInstance {
 	if (!inst)
@@ -131,32 +147,28 @@ static NSDictionary* STChosenAppViews() {
 
 - (void)activator:(LAActivator *)activator receiveEvent:(LAEvent *)event {	
 	if (!w) {
+		// Initialize window
 		w = [[UIWindow alloc] initWithFrame:CGRectMake(10, 200, 300, 100)];
 		w.windowLevel = 9438;
 		w.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0.5];
 		w.layer.cornerRadius = 5;
 		
+		// Initialize picker view
 		picker = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
 		picker.alpha = 0.6;
 		picker.backgroundColor = [UIColor blackColor];
 		picker.layer.cornerRadius = 5;
 		[w addSubview:picker];
 		
-		NSNumber *pann = [spinTaskPrefs objectForKey:@"STPan"];
-		BOOL pan = pann ? [pann boolValue] : YES;
+		// Init preference values
+		BOOL pan = STGetBoolPref(@"STPan", YES);
+		NSUInteger tn = STGetUnsignedIntegerPref(@"STSwipeFingers", 1);
 		
-		NSNumber *touches = [spinTaskPrefs objectForKey:@"STSwipeFingers"];
-		NSUInteger tn = touches ? [touches unsignedIntegerValue] : 1;
+		tap = STGetBoolPref(@"STTap", YES);
+		NSUInteger tpn = STGetUnsignedIntegerPref(@"STTapTaps", 1);
+		NSUInteger ttn = STGetUnsignedIntegerPref(@"STTapFingers", 1);
 		
-		NSNumber *tapp = [spinTaskPrefs objectForKey:@"STTap"];
-		tap = tapp ? [tapp boolValue] : YES;
-		
-		NSNumber *ttaps = [spinTaskPrefs objectForKey:@"STTapTaps"];
-		NSUInteger tpn = ttaps ? [ttaps unsignedIntegerValue] : 1;
-		
-		NSNumber *ttouches = [spinTaskPrefs objectForKey:@"STTapFingers"];
-		NSUInteger ttn = ttouches ? [ttouches unsignedIntegerValue] : 1;
-		
+		// Initialize gesture recognizers
 		if (pan) {
 			UIPanGestureRecognizer *pang = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(pan:)];
 			[pang setMaximumNumberOfTouches:tn];
@@ -191,10 +203,12 @@ static NSDictionary* STChosenAppViews() {
 	}
 	
 	if (w.hidden) {
-		NSNumber *b = [spinTaskPrefs objectForKey:@"STSelectApps"];
-		BOOL s = b ? [b boolValue] : NO;
+		pos = 0;
+		show = YES;
 		
+		BOOL s = STGetBoolPref(@"STSelectApps", NO);
 		NSDictionary *rr = s ? STChosenAppViews() : STRecentAppViews();
+		
 		images = [[rr objectForKey:@"Images"] retain];
 		identifiers = [[rr objectForKey:@"Identifiers"] retain];
 		
@@ -203,10 +217,7 @@ static NSDictionary* STChosenAppViews() {
 		[w setHidden:NO];
 		[picker setFrame:CGRectMake(15, 15, 66, 66)];
 		
-		pos = 0;
 		[self startTimer];
-		
-		show = YES;
 	}
 	
 	else {
@@ -316,7 +327,7 @@ static NSDictionary* STChosenAppViews() {
 }
 @end
 
-// *****************
+// ======================================
 
 typedef struct __GSEvent* GSEventRef;
 
@@ -334,14 +345,18 @@ typedef struct __GSEvent* GSEventRef;
 	if ([act showing]) [act cleanUp];
 	else			   %orig;
 }
+
+- (void)autoLock {
+	id act = [STActivator sharedInstance];
+	
+	if ([act showing]) [act cleanUp];
+	%orig;
+}
 %end
 
-static void STReloadPrefs(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
-	STUpdatePrefs();
-}
+// ======================================
 
-__attribute__((constructor))
-static void STInit() {
+%ctor {
 	NSAutoreleasePool *p = [NSAutoreleasePool new];
 	
 	STUpdatePrefs();
