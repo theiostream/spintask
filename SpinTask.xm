@@ -69,8 +69,7 @@ static BOOL STGetBoolPref(NSString *key, BOOL def) {
 // ======================================
 
 static void STReverse(int *di) {
-	NSNumber *re = [spinTaskPrefs objectForKey:@"STInverse"];
-	BOOL r = re ? [re boolValue] : YES;
+	BOOL r = STGetBoolPref(@"STInverse", NO);
 	
 	if (r)
 		*di = -(*di);

@@ -221,6 +221,8 @@
 			<string>App1</string>
 			<key>ALSingleEnabledMode</key>
 			<true/>
+			<key>ALChangeNotification</key>
+			<string>am.theiostre.spintask.reload</string>
 		</dict>
 		
 		<dict>
@@ -238,6 +240,8 @@
 			<string>App2</string>
 			<key>ALSingleEnabledMode</key>
 			<true/>
+			<key>ALChangeNotification</key>
+			<string>am.theiostre.spintask.reload</string>
 		</dict>
 		
 		<dict>
@@ -255,6 +259,8 @@
 			<string>App3</string>
 			<key>ALSingleEnabledMode</key>
 			<true/>
+			<key>ALChangeNotification</key>
+			<string>am.theiostre.spintask.reload</string>
 		</dict>
 		
 		<dict>
@@ -272,13 +278,15 @@
 			<string>App4</string>
 			<key>ALSingleEnabledMode</key>
 			<true/>
+			<key>ALChangeNotification</key>
+			<string>am.theiostre.spintask.reload</string>
 		</dict>
 		
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>footerText</key>
-			<string>Idea by Ariel Wizx, coded by theiostream.</string>
+			<string>Idea by Ariel Aouizerate &amp; Yaniv Trodjman, and coded by theiostream.</string>
 		</dict>
 	</array>
       
