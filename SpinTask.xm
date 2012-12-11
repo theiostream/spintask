@@ -10,6 +10,7 @@
 #import <libactivator.h>
 #import <libdisplaystack/DSDisplayController.h>
 #import <QuartzCore/QuartzCore.h>
+typedef struct __GSEvent* GSEventRef;
 
 static int l = 4;
 
@@ -76,7 +77,7 @@ static void STReverse(int *di) {
 }
 
 static UIImageView *STImageViewForIdentifier(NSString *ide, int i) {
-	id icon = [[objc_getClass("SBIconModel") sharedInstance] leafIconForIdentifier:ide];
+	id icon = [[%c(SBIconModel) sharedInstance] leafIconForIdentifier:ide];
 	UIImage *iconImage = [icon generateIconImage:0];
 	
 	UIImageView *iconImageView = [[[UIImageView alloc] initWithImage:iconImage] autorelease];
@@ -89,7 +90,7 @@ static NSDictionary* STRecentAppViews() {
 	NSArray *ids;
 	NSMutableArray *ret = [NSMutableArray array];
 	
-	ids = [[objc_getClass("SBAppSwitcherModel") sharedInstance] identifiers];
+	ids = [[%c(SBAppSwitcherModel) sharedInstance] identifiers];
 	for (int i=0; i<l; i++) {
 		NSString *identifier = [ids objectAtIndex:i];
 		
@@ -327,8 +328,6 @@ static NSDictionary* STChosenAppViews() {
 @end
 
 // ======================================
-
-typedef struct __GSEvent* GSEventRef;
 
 %hook SpringBoard
 - (void)menuButtonDown:(GSEventRef)down {
