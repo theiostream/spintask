@@ -1,6 +1,6 @@
 Package: am.theiostre.spintask
 Name: SpinTask
-Depends: mobilesubstrate, com.zimm.libdisplaystack, applist
+Depends: mobilesubstrate, applist, com.zimm.libdisplaystack | firmware (>= 6.0)
 Version: 0.0.1
 Architecture: iphoneos-arm
 Description: An awesome MobileSubstrate tweak!

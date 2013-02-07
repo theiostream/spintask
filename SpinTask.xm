@@ -12,6 +12,10 @@
 #import <QuartzCore/QuartzCore.h>
 typedef struct __GSEvent* GSEventRef;
 
+#ifndef kCFCoreFoundationVersionNumber_iOS_6_0
+#define kCFCoreFoundationVersionNumber_iOS_6_0 793.00
+#endif
+
 static int l = 4;
 
 static id inst = nil;
@@ -38,6 +42,31 @@ static id inst = nil;
 - (void)cleanUp;
 - (BOOL)showing;
 @end
+
+// ======================================
+
+static SBWorkspace *g_workspace = nil;
+%group SBWorkspaceHooks
+%hook SBWorkspace
+- (id)init {
+	if ((self = %orig)) {
+		if (g_workspace == nil)
+			g_workspace = [self retain];
+	}
+	
+	return self;
+}
+
+- (void)dealloc {
+	if (g_workspace == self) {
+		[g_workspace release];
+		g_workspace = nil;
+	}
+	
+	%orig;
+}
+%end
+%end
 
 // ======================================
 
@@ -77,7 +106,8 @@ static void STReverse(int *di) {
 }
 
 static UIImageView *STImageViewForIdentifier(NSString *ide, int i) {
-	id icon = [[%c(SBIconModel) sharedInstance] leafIconForIdentifier:ide];
+	SBIconModel *iconModel = kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_6_0 ? MSHookIvar<SBIconModel *>([%c(SBIconController) sharedInstance], "_iconModel") : [%c(SBIconModel) sharedInstance];
+	id icon = [iconModel leafIconForIdentifier:ide];
 	UIImage *iconImage = [icon generateIconImage:0];
 	
 	UIImageView *iconImageView = [[[UIImageView alloc] initWithImage:iconImage] autorelease];
@@ -94,7 +124,12 @@ static NSDictionary* STRecentAppViews() {
 	for (int i=0; i<l; i++) {
 		NSString *identifier = [ids objectAtIndex:i];
 		
-		id topAppId = [[[DSDisplayController sharedInstance] activeApp] displayIdentifier];
+		id topAppId;
+		if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_6_0)
+			topAppId = [[g_workspace bksWorkspace] topApplication];
+		else
+			topAppId = [[[%c(DSDisplayController) sharedInstance] activeApp] displayIdentifier];
+		
 		if (i==0 && [topAppId isEqualToString:identifier]) {
 			l = 5;
 			continue;
@@ -296,7 +331,11 @@ static NSDictionary* STChosenAppViews() {
 }
 
 - (void)launch {
-	[[DSDisplayController sharedInstance] activateAppWithDisplayIdentifier:[identifiers objectAtIndex:(l==5?pos+1:pos)] animated:YES];
+	//if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_6_0)
+		[[%c(SBUIController) sharedInstance] activateApplicationFromSwitcher:[[%c(SBApplicationController) sharedInstance] applicationWithDisplayIdentifier:[identifiers objectAtIndex:(l==5?pos+1:pos)]]];
+	//else
+	//	[[%c(DSDisplayController) sharedInstance] activateAppWithDisplayIdentifier:[identifiers objectAtIndex:(l==5?pos+1:pos)] animated:YES];
+	
 	[self cleanUp];
 }
 
@@ -364,6 +403,13 @@ static NSDictionary* STChosenAppViews() {
 									CFSTR("am.theiostre.spintask.reload"),
 									NULL,
 									0);
+	
+	if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_6_0)
+		%init(SBWorkspaceHooks);
+	else
+		dlopen("/Library/MobileSubstrate/DynamicLibraries/DisplayStack.dylib", RTLD_LAZY);
+	
+	%init;
 	
 	[p drain];
 }

@@ -3,7 +3,7 @@ include theos/makefiles/common.mk
 TWEAK_NAME = SpinTask
 SpinTask_FILES = SpinTask.xm
 SpinTask_FRAMEWORKS = UIKit CoreGraphics QuartzCore
-SpinTask_LDFLAGS = -lactivator -ldisplaystack
+SpinTask_LDFLAGS = -lactivator
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
